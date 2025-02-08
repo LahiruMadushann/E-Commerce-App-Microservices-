@@ -6,6 +6,11 @@ import org.apache.commons.lang.StringUtils;
 import org.lahiru.ecommerce.exception.CustomerNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -22,7 +27,7 @@ public class CustomerService {
     public void updateCustomer(@Valid CustomerRequest request) {
         var customer = repository.findById(request.id())
                 .orElseThrow(() -> new CustomerNotFoundException(
-                        String.format("Cannot update customer:: No customer found with the provided ID:: %s", request.id())
+                        format("Cannot update customer:: No customer found with the provided ID:: %s", request.id())
                 ));
         mergerCustomer(customer, request);
         repository.save(customer);
@@ -41,5 +46,23 @@ public class CustomerService {
         if (request.address() != null){
             customer.setAddress(request.address());
         }
+    }
+
+    public List<CustomerResponse> findAllCustomers() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::fromCustomer)
+                .collect(Collectors.toList());
+    }
+
+    public Boolean existsById(String customerId) {
+        return repository.findById(customerId)
+                .isPresent();
+    }
+
+    public CustomerResponse findById(String customerId) {
+        return repository.findById(customerId)
+                .map(mapper::fromCustomer)
+                .orElseThrow(() -> new CustomerNotFoundException(format("No customer found with the provided ID:: %s", customerId)));
     }
 }
