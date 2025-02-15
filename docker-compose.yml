@@ -51,7 +51,7 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=lahiru
       - ME_CONFIG_MONGODB_SERVER=mongodb
 
-  zookeper:
+  zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
     environment:
@@ -59,14 +59,14 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 22181:2181
+      - "22181:2181"
     networks:
       - microservices-net
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: ms_kafka
     ports:
-      - 9092:9092
+      - "9092:9092"
     depends_on:
       - zookeeper
     environment:
