@@ -9,6 +9,8 @@ import org.lahiru.ecommerce.kafka.OrderConfirmation;
 import org.lahiru.ecommerce.kafka.OrderProducer;
 import org.lahiru.ecommerce.orderline.OrderLineRequest;
 import org.lahiru.ecommerce.orderline.OrderLineService;
+import org.lahiru.ecommerce.payment.PaymentClient;
+import org.lahiru.ecommerce.payment.PaymentRequest;
 import org.lahiru.ecommerce.product.ProductClient;
 import org.lahiru.ecommerce.product.PurchaseRequest;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class OrderService {
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
     private final OrderProducer orderProducer;
+    private final PaymentClient paymentClient;
 
     public Integer createOrder(OrderRequest request) {
         var customer = this.customerClient.findCustomerById(request.customerId())
@@ -43,6 +46,15 @@ public class OrderService {
                     )
             );
         }
+
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
         orderProducer.sendOrderConfirmation(
                 new OrderConfirmation(
                         request.reference(),
