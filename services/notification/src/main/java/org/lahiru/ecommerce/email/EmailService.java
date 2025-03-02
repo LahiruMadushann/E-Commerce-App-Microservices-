@@ -31,7 +31,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
 
     @Async
-    public void sentPaymentSuccessEmail(
+    public void sendPaymentSuccessEmail(
             String destinationEmail,
             String customerName,
             BigDecimal amount,
@@ -64,7 +64,7 @@ public class EmailService {
     }
 
     @Async
-    public void sentOrderConfirmationEmail(
+    public void sendOrderConfirmationEmail(
             String destinationEmail,
             String customerName,
             BigDecimal amount,
